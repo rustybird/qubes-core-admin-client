@@ -458,3 +458,15 @@ class Pool:
         volumes_data = volumes_data[:-1].decode('ascii')
         for vid in volumes_data.splitlines():
             yield Volume(self.app, self.name, vid)
+
+    @property
+    def ignore_deprecation(self) -> bool:
+        return self.config.get('ignore_deprecation') == 'True'
+
+    @property
+    def is_deprecated(self) -> bool:
+        if self.driver != 'file' or self.ignore_deprecation:
+            return False
+        if self.name != 'varlibqubes' or next(self.volumes, None):
+            return True
+        return False
